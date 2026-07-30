@@ -33,7 +33,7 @@ selected() {
   "") exit 0 ;;
   New) newnote ;;
   *.md) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice" >/dev/null 2>&1 ;;
-  *) exit 0 ;;
+  *) newnote ;;
   esac
 }
 
