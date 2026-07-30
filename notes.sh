@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
 
-folder="$HOME/ideas/"
+folder="~/ideas/"
 
 # Ensure the base notes directory exists
 mkdir -p "$folder"
 
-newnote() {
-  dir="$(command ls -d "$folder" "$folder"*/ | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p 'Choose directory: ')" || exit 0
-  : "${dir:=$folder}"
+newdir() {
+  dir=$(command ls -d "$folder"* | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
+  : "${dir:=$folder$dir}"
+
+  if [[ -d "$dir" ]]; then
+    dir="${dir%/}"
+  fi
+
+  case "$dir" in
+  "$folder") : ;;
+  *) mkdir -p "$dir" ;;
+  esac
 
   name="$(
     echo "" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -p "Enter a name: " <&-
@@ -16,12 +25,6 @@ newnote() {
   : "${name:=$(date +%F_%H-%M-%S)}"
 
   full_path="${dir%/}/${name}.md"
-
-  setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$full_path" >/dev/null 2>&1
-}
-
-default() {
-  full_path="${folder%/}/$1.md"
 
   setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$full_path" >/dev/null 2>&1
 }
@@ -34,9 +37,9 @@ selected() {
 
   case "$choice" in
   "") exit 0 ;;
-  Dir) newnote ;;
+  Dir) newdir ;;
   *.md) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice" >/dev/null 2>&1 ;;
-  *) default "$choice" ;;
+  *) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice.md" >/dev/null 2>&1 ;;
   esac
 }
 
