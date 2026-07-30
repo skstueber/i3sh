@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
 
+# I don't like hom $HOME looks
 folder="~/ideas/"
 
 # Ensure the base notes directory exists
@@ -8,16 +9,14 @@ mkdir -p "$folder"
 
 newdir() {
   dir=$(command ls -d "$folder"* | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
-  : "${dir:=$folder$dir}"
 
-  if [[ -d "$dir" ]]; then
-    dir="${dir%/}"
+  if [[ "${dir:0:1}" == "*" ]]; then
+    dir="~/${dir:1}"
+  else
+    dir="$folder$dir"
   fi
 
-  case "$dir" in
-  "$folder") : ;;
-  *) mkdir -p "$dir" ;;
-  esac
+  mkdir -p "$dir"
 
   name="$(
     echo "" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -p "Enter a name: " <&-
@@ -30,7 +29,6 @@ newdir() {
 }
 
 selected() {
-  # Format list cleanly relative to the folder root
   choice=$(
     echo -e "Dir\n$(find "$folder" -type f -name "*.md" -printf '%T@ %P\n' | sort -nr | cut -d' ' -f2-)" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p "Choose note or create new: "
   )
