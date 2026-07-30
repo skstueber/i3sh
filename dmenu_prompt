@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Dmenu binary prompt script
+# Args: prompt, command
+# Then a yes or no if you want to run the command
+# Note: description of prompt has to be in prompt arg
+
+[ $(printf "FUCK NO\nyes" | dmenu -i -p "$1" -fn 'monospace-12' -nb '#1e1e1e' -sf '#000000' -sb '#f4800d' -nf '#F4800d') = "yes" ] && $2
