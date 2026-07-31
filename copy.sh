@@ -15,7 +15,7 @@ output() {
 
 write() {
   [ -f "$histfile" ] || notify-send -a "FILE" "Creating $histfile"
-  touch $histfile
+  touch "$histfile"
   [ -z "$clip" ] && exit 0
   multiline=$(echo "$clip" | sed ':a;N;$!ba;s/\n/'"$placeholder"'/g')
   grep -Fxq "$multiline" "$histfile" || echo "$multiline" >>"$histfile"

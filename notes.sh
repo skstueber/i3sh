@@ -2,16 +2,16 @@
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
 
 # I don't like hom $HOME looks
-folder="~/ideas/"
+folder="$HOME/ideas/"
 
 # Ensure the base notes directory exists
 mkdir -p "$folder"
 
 newdir() {
-  dir=$(command ls -d "$folder"* | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
+  dir=$(command ls -d "$folder" "$folder"*/ | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
 
   if [[ "${dir:0:1}" == "*" ]]; then
-    dir="~/${dir:1}"
+    dir="${dir:1}"
   else
     dir="$folder$dir"
   fi
