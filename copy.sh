@@ -14,7 +14,7 @@ output() {
 }
 
 write() {
-  [ -f "$histfile" ] || notify-send -a "FILE" "Creating $histfile"
+  [ -f "$histfile" ] || notify-send "Creating $histfile"
   touch "$histfile"
   [ -z "$clip" ] && exit 0
   multiline=$(echo "$clip" | sed ':a;N;$!ba;s/\n/'"$placeholder"'/g')
@@ -23,11 +23,11 @@ write() {
 
 sel() {
   selection=$(tac "$histfile" | dmenu -b -l 5 -i -p "Clipboard history:")
-  [ -n "$selection" ] && echo "$selection" | sed "s/$placeholder/\n/g" | xclip -i -selection clipboard && notification="Copied to clipboard!"
+  [ -n "$selection" ] && echo "$selection" | sed "s/$placeholder/\n/g" | xclip -i -selection clipboard
 }
 
 clear() {
-  rm -rf "$histfile" || notify-send -a "CLIPBOARD" "Cleared"
+  rm -rf "$histfile" && notify-send "Cliphist Cleared"
 }
 
 help() {
