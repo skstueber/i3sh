@@ -35,5 +35,6 @@ case "$choice" in
   sub) sub ;;
   rec) rec ;;
   hist) ;;
+  "") exit 0 ;;
   *) setsid -f "${TERMINAL:-st}" -c "floating" -e ytfzf -T chafa -t --detach --query "$choice" 2>/dev/null ;;
 esac
