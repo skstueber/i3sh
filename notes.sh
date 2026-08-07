@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
 
-# I don't like hom $HOME looks
 folder="$HOME/ideas/"
 
 # Ensure the base notes directory exists
