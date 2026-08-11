@@ -11,9 +11,11 @@ mkdir -p "$folder"
 newdir() {
   dir=$(cat "$dirs" | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
 
-  if [[ "${dir:0:1}" == "*" ]]; then
+  if [[ "${dir:0:1}" == "/" ]]; then
     dir="${dir:1}"
     echo "$dir" >> "$dirs"
+  elif grep -Fxq -- "$dir" "$dirs"; then
+    dir="$HOME/$dir"
   else
     dir="$folder$dir"
   fi
