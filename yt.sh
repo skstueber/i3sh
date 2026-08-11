@@ -8,7 +8,6 @@ all () {
 }
 
 sub () {
-
   csub=$(echo -e "All\n$(cat "$subscribed")" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -l 20 -i -p "Choose subscription or create new:")
   if [[ "$csub" == "" ]]; then
     exit 0

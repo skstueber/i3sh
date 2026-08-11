@@ -2,15 +2,18 @@
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
 
 folder="$HOME/ideas/"
+dirs="$HOME/.cache/notehist/dirs"
+notes="$HOME/.cache/notehist/notes"
 
 # Ensure the base notes directory exists
 mkdir -p "$folder"
 
 newdir() {
-  dir=$(command ls -d "$folder" "$folder"*/ | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
+  dir=$(cat "$dirs" | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
 
   if [[ "${dir:0:1}" == "*" ]]; then
     dir="${dir:1}"
+    echo "$dir" >> "$dirs"
   else
     dir="$folder$dir"
   fi
@@ -22,19 +25,29 @@ newdir() {
   )" || exit 0
   : "${name:=$(date +%F_%H-%M-%S)}"
 
+
   full_path="${dir%/}/${name}.md"
+
+  echo "$full_path" >> "$notes"
 
   setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$full_path" >/dev/null 2>&1
 }
 
 selected() {
   choice=$(
-    echo -e "Dir\n$(find "$folder" -type f -name "*.md" -printf '%T@ %P\n' | sort -nr | cut -d' ' -f2-)" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p "Choose note or create new: "
+    {
+      echo "Dir"
+      cat "$notes"
+      find "$folder" -type f -name "*.md" -printf '%T@ %P\n' |
+        sort -nr |
+        cut -d' ' -f2-
+    } | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p "Choose note or create new: "
   )
 
   case "$choice" in
   "") exit 0 ;;
   Dir) newdir ;;
+  */*) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$choice" >/dev/null 2>&1 ;;
   *.md) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice" >/dev/null 2>&1 ;;
   *) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice.md" >/dev/null 2>&1 ;;
   esac
