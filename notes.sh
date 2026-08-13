@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Modified from https://github.com/BreadOnPenguins/scripts/blob/master/shortcuts-menus/notes
+# This script needs to be used a certain way; I do not account for misuse of script:
+# 1. To access old not, do it on first dmenu run
+# 2. To create new note, do it on first dmenu run
+# 3. To create or access new directory, do it on second dmenu run by chossing "Dir" on first
 
 folder="$HOME/ideas/"
 dirs="$HOME/.cache/notehist/dirs"
