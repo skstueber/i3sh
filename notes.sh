@@ -9,11 +9,11 @@ notes="$HOME/.cache/notehist/notes"
 mkdir -p "$folder"
 
 newdir() {
-  dir=$(cat "$dirs" | dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:") || exit 0
+  dir=$(dmenu -fn "FireCode-14" -nb "#282a36" -sf "#ad90ff" -sb "#44475a" -nf "#bd93f9" -i -p "Choose directory or create new:" < "$dirs") || exit 0
 
   if [[ "${dir:0:1}" == "/" ]]; then
     dir="${dir:1}"
-    echo "$dir" >> "$dirs"
+    echo "$dir" >>"$dirs"
   elif grep -Fxq -- "$dir" "$dirs"; then
     dir="$HOME/$dir"
   else
@@ -27,10 +27,10 @@ newdir() {
   )" || exit 0
   : "${name:=$(date +%F_%H-%M-%S)}"
 
+  [[ "$name" == *.md ]] || name="$name.md"
+  full_path="${dir%/}/$name"
 
-  full_path="${dir%/}/${name}.md"
-
-  echo "$full_path" >> "$notes"
+  echo "$full_path" >>"$notes"
 
   setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$full_path" >/dev/null 2>&1
 }
@@ -49,7 +49,14 @@ selected() {
   case "$choice" in
   "") exit 0 ;;
   Dir) newdir ;;
-  */*) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$choice" >/dev/null 2>&1 ;;
+  */*)
+    # If the file exists in ideas/, open it there; otherwise it is a custom dir
+    if [[ -f "$folder$choice" ]]; then
+      setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice" >/dev/null 2>&1
+    else
+      setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$choice" >/dev/null 2>&1
+    fi
+    ;;
   *.md) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice" >/dev/null 2>&1 ;;
   *) setsid -f "${TERMINAL:-st}" -c "floating" -f "Liberation Mono:size=13" -e nvim "$folder$choice.md" >/dev/null 2>&1 ;;
   esac
