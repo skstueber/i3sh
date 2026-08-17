@@ -29,11 +29,16 @@ rec () {
   [ -f "$subscribed" ] || notify-send "Don't have subscriptions for recs" | exit 1
 }
 
-choice=$(echo -e "sub\nrec\nhist" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p "Seach for video:")
+audio () {
+  setsid -f "${TERMINAL:-st}" -c "floating" -e ytfzf -m --sort-by=relevance --query "$1" 2>/dev/null
+}
+
+choice=$(echo -e "sub\nrec\nhist\naudio" | dmenu -fn 'FireCode-14' -nb '#282a36' -sf '#ad90ff' -sb '#44475a' -nf '#bd93f9' -i -p "Seach for video:")
 
 case "$choice" in
   sub) sub ;;
   rec) rec ;;
+  audio) audio "$choice" ;;
   hist) ;;
   "") exit 0 ;;
   *) setsid -f "${TERMINAL:-st}" -c "floating" -e ytfzf -T chafa -t --detach --query "$choice" 2>/dev/null ;;
